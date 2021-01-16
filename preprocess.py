@@ -16,12 +16,11 @@ data=pd.concat([df_f,df_t],axis=0)
 # One model predicting with text
 #The other one predicting with only header of the news.
 
-data_text=data.drop(['title','subject','date'],axis=1)
-data_title=data.drop(['title','subject','date'],axis=1)
+data_text=data.drop(['title','date'],axis=1)
+data_title=data.drop(['text','date'],axis=1)
 
 data.isnull().sum() #there is no empty variable
 
-print(data_text)
 
 #%% Cleaning the text
 
@@ -33,30 +32,33 @@ from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize, RegexpTokenizer
 import re
 import string
-print("hi")
 def del_punc (text):
     freepunc = "".join([i for i in text if i not in string.punctuation])
     return freepunc
-def del_stops(text):
-    stop = [word for word in text if word not in stopwords.words("english")]
+def del_stops(text,s):
+    stop = ' '.join([word for word in text if word not in s])
     return stop
 lemmatizer = WordNetLemmatizer()
 def lemma(text):
     lemm = [lemmatizer.lemmatize(word) for word in text]
     return lemm
 tokenizer = RegexpTokenizer(r'\w+') # TODO : check this later
-stemmer = PorterStemmer()
-def stemm(text):
-    stemm = " ".join([stemmer.stem(word) for word in text])
-    return stemm
+
 def clean_df(df): #send as data["text"]
     df = df.apply(lambda x: del_punc(x))
+    print("Punctuation Removed")
     df = df.apply(lambda x: tokenizer.tokenize(x.lower()))
-    df = df.apply(lambda x: del_stops(x))
-    df = df.apply(lambda x: lemma(x))
-    df = df.apply(lambda x: stemm(x))
-    return df
+    print("Lowered")
+    s = stopwords.words("english")
+    df = df.apply(lambda x: del_stops(x,s))
+    print("Stop words removed")
+    lemm = [lemmatizer.lemmatize(word) for word in df]
+    print("Lemmatized")
+    return lemm
+
+
+stops = stopwords.words("english")
 data_text["text"] = clean_df(data_text["text"])
-print(data_text)
+data_title["title"] = clean_df(data_title["title"])
 
 
