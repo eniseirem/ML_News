@@ -1,6 +1,5 @@
 import pandas as pd
 
-# TODO: Add missing_values
 
 df_f=pd.read_csv("data/Fake.csv")
 df_f['status']=0 #we will keep the fake/true here.
@@ -42,7 +41,7 @@ lemmatizer = WordNetLemmatizer()
 def lemma(text):
     lemm = [lemmatizer.lemmatize(word) for word in text]
     return lemm
-tokenizer = RegexpTokenizer(r'\w+') # TODO : check this later
+tokenizer = RegexpTokenizer(r'\w+')
 
 def clean_df(df): #send as data["text"]
     df = df.apply(lambda x: del_punc(x))
